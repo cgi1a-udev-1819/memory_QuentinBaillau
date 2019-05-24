@@ -2,6 +2,8 @@ package com.example.carte;
 
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Deque;
 
@@ -9,6 +11,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 import com.example.swing.FrameForDemoMaker;
@@ -19,6 +22,7 @@ public class CarteApp extends FrameForDemoMaker {
     private ImageIcon dosCarte = ResourceUtility.loadImage("images/dos.png");
     
     private Jeu jeu = new Jeu();
+    private EtatMemoire etatMemoire = new EtatMemoire();
 
     public CarteApp() throws IOException{
         super("Mémoire");
@@ -32,25 +36,28 @@ public class CarteApp extends FrameForDemoMaker {
         
         Deque<ImageIcon> pioche = jeu.creerPioche();
         while(!pioche.isEmpty()) {
-            cp.add(createButton2(pioche));
+            cp.add(createButton(pioche));
         }
-        
-        for (int i = 0; i < 6 ; i++) {
-        	for (int j =0; j < 4 ; j++ ) {
-        		cp.add(createButton());
-        	}
-        } 
     }
     
-    public JComponent createButton() {
-        JButton button = new JButton(dosCarte);
-        return button;
-    }
+    public JComponent createButton(Deque<ImageIcon> pioche) {
+		ImageIcon imageIcon = pioche.pop(); // Récupération depuis la pioche
+		JToggleButton button = new JToggleButton(dosCarte);
+		button.setSelectedIcon(imageIcon);
+		button.setDisabledIcon(imageIcon);
+		button.setDisabledSelectedIcon(imageIcon);
+		button.putClientProperty("carte", imageIcon.getDescription());
+
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(button.getClientProperty("carte"));
+				etatMemoire.nouveauBoutonSelectionne(button);
+			}
+		});
+		return button;
+	}
     
-    public JComponent createButton2(Deque<ImageIcon> pioche) {
-        JButton button = new JButton(pioche.pop());
-        return button;
-    }
     
     
     
